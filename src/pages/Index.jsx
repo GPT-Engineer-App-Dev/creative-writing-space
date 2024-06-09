@@ -1,5 +1,7 @@
-import { Box, Container, Flex, Heading, HStack, Link, Text, VStack, Button, Spacer, useColorMode, IconButton } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, HStack, Link, Text, VStack, Button, Spacer, useColorMode, IconButton, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useDisclosure } from "@chakra-ui/react";
 import { FaTwitter, FaFacebook, FaInstagram, FaSun, FaMoon } from "react-icons/fa";
+import { useState } from "react";
+import React from "react";
 
 const ColorModeSwitcher = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -14,6 +16,25 @@ const ColorModeSwitcher = () => {
 };
 
 const Index = () => {
+  const [posts, setPosts] = useState([
+    { id: 1, title: "Post Title 1", excerpt: "This is a brief excerpt of the blog post..." },
+    { id: 2, title: "Post Title 2", excerpt: "This is a brief excerpt of the blog post..." },
+    { id: 3, title: "Post Title 3", excerpt: "This is a brief excerpt of the blog post..." },
+  ]);
+  const [postToDelete, setPostToDelete] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef();
+
+  const handleDelete = (post) => {
+    setPostToDelete(post);
+    onOpen();
+  };
+
+  const confirmDelete = () => {
+    setPosts(posts.filter(post => post.id !== postToDelete.id));
+    onClose();
+  };
+
   return (
     <Box>
       {/* Navigation Bar */}
@@ -39,23 +60,44 @@ const Index = () => {
       <Container maxW="container.md" py={10}>
         <Heading as="h3" size="xl" mb={6}>Recent Posts</Heading>
         <VStack spacing={8} align="stretch">
-          <Box p={5} shadow="md" borderWidth="1px">
-            <Heading fontSize="xl">Post Title 1</Heading>
-            <Text mt={4}>This is a brief excerpt of the blog post...</Text>
-            <Button mt={4} colorScheme="teal">Read More</Button>
-          </Box>
-          <Box p={5} shadow="md" borderWidth="1px">
-            <Heading fontSize="xl">Post Title 2</Heading>
-            <Text mt={4}>This is a brief excerpt of the blog post...</Text>
-            <Button mt={4} colorScheme="teal">Read More</Button>
-          </Box>
-          <Box p={5} shadow="md" borderWidth="1px">
-            <Heading fontSize="xl">Post Title 3</Heading>
-            <Text mt={4}>This is a brief excerpt of the blog post...</Text>
-            <Button mt={4} colorScheme="teal">Read More</Button>
-          </Box>
+          {posts.map(post => (
+            <Box key={post.id} p={5} shadow="md" borderWidth="1px">
+              <Heading fontSize="xl">{post.title}</Heading>
+              <Text mt={4}>{post.excerpt}</Text>
+              <Button mt={4} colorScheme="teal">Read More</Button>
+              <Button mt={4} colorScheme="red" onClick={() => handleDelete(post)}>Delete</Button>
+            </Box>
+          ))}
         </VStack>
       </Container>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Post
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure you want to delete this post? This action cannot be undone.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={confirmDelete} ml={3}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
 
       {/* Footer */}
       <Box bg="gray.800" color="white" py={10}>
