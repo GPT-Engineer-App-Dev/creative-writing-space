@@ -1,5 +1,17 @@
-import { Box, Container, Flex, Heading, HStack, Link, Text, VStack, Button, Spacer } from "@chakra-ui/react";
-import { FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
+import { Box, Container, Flex, Heading, HStack, Link, Text, VStack, Button, Spacer, useColorMode, IconButton } from "@chakra-ui/react";
+import { FaTwitter, FaFacebook, FaInstagram, FaSun, FaMoon } from "react-icons/fa";
+
+const ColorModeSwitcher = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
+  return (
+    <IconButton
+      aria-label="Toggle dark mode"
+      icon={colorMode === "light" ? <FaMoon /> : <FaSun />}
+      onClick={toggleColorMode}
+      variant="ghost"
+    />
+  );
+};
 
 const Index = () => {
   return (
@@ -13,6 +25,7 @@ const Index = () => {
           <Link href="/blog">Blog</Link>
           <Link href="/contact">Contact</Link>
           <Link href="/add-post">Add Post</Link>
+          <ColorModeSwitcher />
         </HStack>
       </Flex>
 
